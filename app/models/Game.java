@@ -44,7 +44,6 @@ public class Game extends Model {
         return null;
     }
 
-
     public String getId() {
         return id;
     }

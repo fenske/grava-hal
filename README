@@ -1,4 +1,7 @@
-This is your new Play application
+Grava-Hal game
 =================================
 
-This file will be packaged with your application, when using `activator dist`.
+To run the game:
+ 1. Type 'activator run' in your console
+ 2. Open a browser
+ 3. Navigate to http://localhost:9000/

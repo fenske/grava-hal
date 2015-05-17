@@ -23,7 +23,7 @@ public class Turn {
         int curIndex = pitIndex + 1;
 
         while (state.getLeavesQty() > 0) {
-            state = curPlayer.sow(state.getLeavesQty(), curIndex, curPlayer == owner);
+            state = sow(curPlayer, state.getLeavesQty(), curIndex, curPlayer == owner);
             if (state.getLeavesQty() > 0) {
                 curPlayer = selectNextPlayer(curPlayer);
                 curIndex = 0;
@@ -51,4 +51,54 @@ public class Turn {
             return selectNextPlayer(curActivePlayer).getName();
         }
     }
+
+    private SowState sow(Player player, int qtyToSow, int pitPos, boolean includeGravaHal) {
+        boolean wasLastInGravaHal = false;
+
+        int pitToken = pitPos;
+        while(qtyToSow > 0 && pitToken < player.getPits().size()) {
+            qtyToSow = sowInCommonPit(player, qtyToSow, pitToken);
+            pitToken++;
+        }
+
+        if (qtyToSow == 0 &&
+            pitToken <= player.getPits().size() &&
+            player.getPits().get(pitToken - 1).getLeavesQty() == 1 &&
+            includeGravaHal) {
+            int stolenQty = 0;
+            for (Player p : game.getPlayers()) {
+                if (!p.getName().equals(playerName)) {
+                    stolenQty += p.getPits().get(pitToken - 1).emptyPit();
+                }
+            }
+            Player owner = game.getPlayerByName(playerName);
+            int ownQty = owner.getPits().get(pitToken - 1).emptyPit();
+            GravaHal ownerGravaHal = owner.getGravaHal();
+            ownerGravaHal.setLeavesQty(
+                    ownerGravaHal.getLeavesQty() +
+                            ownQty +
+                            stolenQty
+            );
+        } else if(qtyToSow > 0 && includeGravaHal) {
+            qtyToSow = sowInGravaHal(player, qtyToSow);
+            wasLastInGravaHal = true;
+        }
+        return new SowState(qtyToSow, wasLastInGravaHal);
+    }
+
+    private int sowInGravaHal(Player player, int qtyToSow) {
+        GravaHal gravaHal = player.getGravaHal();
+        gravaHal.setLeavesQty(gravaHal.getLeavesQty() + 1);
+        qtyToSow--;
+        return qtyToSow;
+    }
+
+    private int sowInCommonPit(Player player, int qtyToSow, int pos) {
+        Pit pit = player.getPits().get(pos);
+        pit.setLeavesQty(pit.getLeavesQty() + 1);
+        qtyToSow--;
+        return qtyToSow;
+    }
+
+
 }

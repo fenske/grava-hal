@@ -42,34 +42,6 @@ public class Player extends Model {
         return pits.get(index).getLeavesQty() > 0;
     }
 
-    public SowState sow(int qtyToSow, int pitPos, boolean includeGravaHal) {
-        boolean wasLastInGravaHal = false;
-
-        while(qtyToSow > 0 && pitPos < pits.size()) {
-            qtyToSow = sowInCommonPit(qtyToSow, pitPos);
-            pitPos++;
-        }
-
-        if(qtyToSow > 0 && includeGravaHal) {
-            qtyToSow = sowInGravaHal(qtyToSow);
-            wasLastInGravaHal = true;
-        }
-        return new SowState(qtyToSow, wasLastInGravaHal);
-    }
-
-    private int sowInGravaHal(int qtyToSow) {
-        gravaHal.setLeavesQty(gravaHal.getLeavesQty() + 1);
-        qtyToSow--;
-        return qtyToSow;
-    }
-
-    private int sowInCommonPit(int qtyToSow, int pos) {
-        Pit pit = pits.get(pos);
-        pit.setLeavesQty(pit.getLeavesQty() + 1);
-        qtyToSow--;
-        return qtyToSow;
-    }
-
     public String getName() {
         return name;
     }
