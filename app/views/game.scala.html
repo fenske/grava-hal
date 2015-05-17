@@ -1,0 +1,33 @@
+@(game: Game)
+
+@main("Game "){
+<div class="players_description">
+    <h5>@game.getPlayers().get(0).getName() vs. @game.getPlayers().get(1).getName()</h5>
+</div>
+
+<div class="board1">
+    @for(player <- game.getPlayers()) {
+    <table style="float: left" border="1">
+        @for(pit <- player.getPits()){
+        <tr>
+            <td>
+                @if(game.isActivePit(player.getName(), pit.getIndex())) {
+                <a href="@routes.Application.round(game.getId(), player.getName(), pit.getIndex())">@pit.getLeavesQty()</a>
+                } else {
+                @pit.getLeavesQty()
+                }
+            </td>
+        </tr>
+        }
+        <tr>
+            <td><font color="red">@player.getGravaHal().getLeavesQty()</font></td>
+        </tr>
+    </table>
+    <table style="float: left">
+        <tr>
+            <td></td>
+        </tr>
+    </table>
+    }
+</div>
+}

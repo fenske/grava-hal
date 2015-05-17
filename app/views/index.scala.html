@@ -1,0 +1,13 @@
+@main("Grava Hal") {
+<form action="@routes.Application.launchGame()" method="post">
+    <label for="firstPlayerName">Player #1</label>
+    <input type="text" name="firstPlayerName"/>
+    <br/>
+    <br/>
+    <label for="secondPlayerName">Player #2</label>
+    <input type="text" name="secondPlayerName"/>
+    <br/>
+    <br/>
+    <input type="submit" value="Play game"/>
+</form>
+}
