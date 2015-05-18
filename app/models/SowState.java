@@ -3,16 +3,18 @@ package models;
 public class SowState {
 
     private final int leavesQty;
-    private final boolean includeGravaHal;
+    private final boolean isLastInGravaHal;
 
-    public SowState(int inHand_, boolean inGravaHal_) {
-        leavesQty = inHand_;
-        includeGravaHal = inGravaHal_;
+    public SowState(int leavesQty, boolean isLastInGravaHal) {
+        this.leavesQty = leavesQty;
+        this.isLastInGravaHal = isLastInGravaHal;
     }
 
     public int getLeavesQty() {
-        return leavesQty; }
+        return leavesQty;
+    }
 
-    public boolean getIncludeGravaHal() {
-        return includeGravaHal; }
+    public boolean getLastInGravaHal() {
+        return isLastInGravaHal;
+    }
 }

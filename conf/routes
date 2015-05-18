@@ -7,9 +7,9 @@ GET     /                                           controllers.Application.inde
 
 POST    /launch_game                                controllers.Application.launchGame()
 
-GET     /play/*game_id                              controllers.Application.playGame(game_id)
+GET     /play/*game_id                              controllers.Application.playGame(game_id: Int)
 
-GET    /play_game/*game_id/round/*player_id/*pit_id controllers.Application.round(game_id, player_id, pit_id: Int)
+GET    /play_game/*game_id/round/*player_id/*pit_id controllers.Application.round(game_id: Int, player_id, pit_id: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                     controllers.Assets.at(path="/public", file)

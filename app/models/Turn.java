@@ -3,27 +3,25 @@ package models;
 public class Turn {
 
     private final Game game;
-    private final String playerName;
+    private final Player owner;
     private final int pitIndex;
 
-    public Turn(Game game, String playerName, int pitIndex) {
+    public Turn(Game game, Player owner, int pitIndex) {
         this.game = game;
-        this.playerName = playerName;
+        this.owner = owner;
         this.pitIndex = pitIndex;
     }
 
     public void proceed() {
-        Player owner = game.getPlayerByName(playerName);
-
         Player curPlayer = owner;
-        CommonPit pit = curPlayer.getPits().get(pitIndex);
-        int stonesLeft = pit.emptyPit();
+        CommonPit selectedPit = curPlayer.getPits().get(pitIndex);
+        int stonesLeft = selectedPit.emptyPit();
 
-        SowState state = new SowState(stonesLeft, true);
+        SowState state = new SowState(stonesLeft, false);
         int curIndex = pitIndex + 1;
 
         while (state.getLeavesQty() > 0) {
-            state = sow(curPlayer, state.getLeavesQty(), curIndex, curPlayer == owner);
+            state = sow(curPlayer, state.getLeavesQty(), curIndex, curPlayer.equals(owner));
             if (state.getLeavesQty() > 0) {
                 curPlayer = selectNextPlayer(curPlayer);
                 curIndex = 0;
@@ -35,7 +33,6 @@ public class Turn {
         } else {
             game.setActivePlayer(getActivePlayer(state));
         }
-
     }
 
     private Player selectNextPlayer(Player from) {
@@ -44,7 +41,7 @@ public class Turn {
     }
 
     private Player getActivePlayer(SowState sowState) {
-        if (sowState.getIncludeGravaHal()) {
+        if (sowState.getLastInGravaHal()) {
             return game.getActivePlayer();
         } else {
             return selectNextPlayer(game.getActivePlayer());
@@ -52,7 +49,7 @@ public class Turn {
     }
 
     private SowState sow(Player player, int qtyToSow, int pitPos, boolean includeGravaHal) {
-        boolean wasLastInGravaHal = false;
+        boolean isLastInGravaHal = false;
 
         int pitToken = pitPos;
         while(qtyToSow > 0 && pitToken < player.getPits().size()) {
@@ -61,43 +58,42 @@ public class Turn {
         }
 
         if (qtyToSow == 0 &&
-            pitToken <= player.getPits().size() &&
-            player.getPits().get(pitToken - 1).getLeavesQty() == 1 &&
-            includeGravaHal) {
-            int stolenQty = 0;
-            for (Player p : game.getPlayers()) {
-                if (!p.getName().equals(playerName)) {
-                    stolenQty += p.getPits().get(pitToken - 1).emptyPit();
-                }
-            }
-            Player owner = game.getPlayerByName(playerName);
-            int ownQty = owner.getPits().get(pitToken - 1).emptyPit();
-            GravaHal ownerGravaHal = owner.getGravaHal();
-            ownerGravaHal.setLeavesQty(
-                    ownerGravaHal.getLeavesQty() +
-                            ownQty +
-                            stolenQty
-            );
+                pitToken <= player.getPits().size() &&
+                player.getPits().get(pitToken - 1).getLeavesQty() == 1 &&
+                includeGravaHal) {
+            stealStones(pitToken);
+
         } else if(qtyToSow > 0 && includeGravaHal) {
             qtyToSow = sowInGravaHal(player, qtyToSow);
-            wasLastInGravaHal = true;
+            isLastInGravaHal = true;
         }
-        return new SowState(qtyToSow, wasLastInGravaHal);
-    }
 
-    private int sowInGravaHal(Player player, int qtyToSow) {
-        GravaHal gravaHal = player.getGravaHal();
-        gravaHal.setLeavesQty(gravaHal.getLeavesQty() + 1);
-        qtyToSow--;
-        return qtyToSow;
+        return new SowState(qtyToSow, isLastInGravaHal);
     }
 
     private int sowInCommonPit(Player player, int qtyToSow, int pos) {
         Pit pit = player.getPits().get(pos);
         pit.setLeavesQty(pit.getLeavesQty() + 1);
-        qtyToSow--;
-        return qtyToSow;
+        return qtyToSow - 1;
     }
 
+    private void stealStones(int pitToken) {
+        int stolenQty = 0;
 
+        for (Player p : game.getPlayers()) {
+            if (!p.equals(owner)) {
+                stolenQty += p.getPits().get(pitToken - 1).emptyPit();
+            }
+        }
+
+        int ownQty = owner.getPits().get(pitToken - 1).emptyPit();
+        GravaHal ownerGravaHal = owner.getGravaHal();
+        ownerGravaHal.setLeavesQty(ownerGravaHal.getLeavesQty() + ownQty + stolenQty);
+    }
+
+    private int sowInGravaHal(Player player, int qtyToSow) {
+        GravaHal gravaHal = player.getGravaHal();
+        gravaHal.setLeavesQty(gravaHal.getLeavesQty() + 1);
+        return qtyToSow - 1;
+    }
 }

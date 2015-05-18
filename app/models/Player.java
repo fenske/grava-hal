@@ -38,8 +38,8 @@ public class Player extends Model {
         gravaHal = new GravaHal();
     }
 
-    public boolean isNotEmpty(int index) {
-        return pits.get(index).getLeavesQty() > 0;
+    public int getId() {
+        return id;
     }
 
     public String getName() {

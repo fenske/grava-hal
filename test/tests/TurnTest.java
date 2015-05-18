@@ -25,13 +25,15 @@ public class TurnTest {
         players.add(new Player("Ivanov"));
         players.add(new Player("Petrov"));
         game = new Game(players);
-        turn = new Turn(game, players.get(0).getName(), 0);
+        turn = new Turn(game, players.get(0), 0);
     }
 
     @Test
     public void testProceed() {
         turn.proceed();
-        List<CommonPit> pits = game.getPlayers().get(0).getPits();
+
+        Player firstPlayer = game.getPlayers().get(0);
+        List<CommonPit> pits = firstPlayer.getPits();
         for (int i = 0; i < pits.size(); i++) {
             int testQty;
             if (i == 0) {
@@ -42,8 +44,13 @@ public class TurnTest {
             CommonPit pit = pits.get(i);
             assertThat(pit.getLeavesQty(), is(equalTo(testQty)));
         }
-        for (CommonPit pit : game.getPlayers().get(1).getPits()) {
+        assertThat(firstPlayer.getGravaHal().getLeavesQty(), is(equalTo(1)));
+
+        Player secondPlayer = game.getPlayers().get(1);
+        for (CommonPit pit : secondPlayer.getPits()) {
             assertThat(pit.getLeavesQty(), is(equalTo(6)));
         }
+
+        assertThat(game.getActivePlayer(), is(equalTo(firstPlayer)));
     }
 }

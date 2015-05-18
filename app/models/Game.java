@@ -12,7 +12,7 @@ import play.db.ebean.Model;
 public class Game extends Model {
 
     @Id
-    private String id;
+    private int id;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Player activePlayer;
@@ -30,7 +30,7 @@ public class Game extends Model {
     }
 
     public boolean isActivePit(Player player, int pitIndex) {
-        return player.equals(activePlayer) && player.isNotEmpty(pitIndex);
+        return player.equals(activePlayer) && ! player.getPits().get(pitIndex).isEmpty();
     }
 
     public Player getPlayerByName(String playerName) {
@@ -42,7 +42,7 @@ public class Game extends Model {
         return null;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

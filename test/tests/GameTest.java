@@ -40,8 +40,10 @@ public class GameTest {
             }
         }
         Player chosenPlayer = game.getPlayers().get(0);
+        game.setActivePlayer(chosenPlayer);
         CommonPit selectedPit = chosenPlayer.getPits().get(0);
-        Turn turn = new Turn(game, chosenPlayer.getName(), selectedPit.getIndex());
+        Turn turn = new Turn(game, chosenPlayer, selectedPit.getIndex());
+        turn.proceed();
         assertThat(game.isActivePit(chosenPlayer, selectedPit.getIndex()), is(false));
     }
 

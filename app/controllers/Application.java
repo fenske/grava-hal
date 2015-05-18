@@ -30,8 +30,8 @@ public class Application extends Controller {
         return redirect(routes.Application.playGame(gravaHalGame.getId()));
     }
 
-    public static Result playGame(String gameId) {
-        Game gravaHalGame = new Model.Finder<>(String.class, Game.class).byId(gameId);
+    public static Result playGame(int gameId) {
+        Game gravaHalGame = new Model.Finder<>(Integer.class, Game.class).byId(gameId);
 
         if (gravaHalGame != null) {
             return ok(game.render(gravaHalGame));
@@ -41,11 +41,11 @@ public class Application extends Controller {
         }
     }
 
-    public static Result round(String gameId, String playerName, int pitIndex) {
-        Game gravaHalGame = new Model.Finder<>(String.class, Game.class).byId(gameId);
-
+    public static Result round(int gameId, String ownerName, int pitIndex) {
+        Game gravaHalGame = new Model.Finder<>(Integer.class, Game.class).byId(gameId);
         if (gravaHalGame != null) {
-            gravaHalGame.round(new Turn(gravaHalGame, playerName, pitIndex));
+            Player roundOwner = gravaHalGame.getPlayerByName(ownerName);
+            gravaHalGame.round(new Turn(gravaHalGame, roundOwner, pitIndex));
             gravaHalGame.save();
             return ok(game.render(gravaHalGame));
         }
