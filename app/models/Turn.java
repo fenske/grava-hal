@@ -33,7 +33,7 @@ public class Turn {
         if (game.isOver()) {
             game.finish();
         } else {
-            game.setActivePlayerName(getActivePlayer(state));
+            game.setActivePlayer(getActivePlayer(state));
         }
 
     }
@@ -43,12 +43,11 @@ public class Turn {
         return game.getPlayers().get((index + 1) % game.getPlayers().size());
     }
 
-    private String getActivePlayer(SowState sowState) {
+    private Player getActivePlayer(SowState sowState) {
         if (sowState.getIncludeGravaHal()) {
-            return game.getActivePlayerName();
+            return game.getActivePlayer();
         } else {
-            Player curActivePlayer = game.getPlayerByName(game.getActivePlayerName());
-            return selectNextPlayer(curActivePlayer).getName();
+            return selectNextPlayer(game.getActivePlayer());
         }
     }
 

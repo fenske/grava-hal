@@ -1,12 +1,10 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import play.db.ebean.Model;
 
@@ -16,23 +14,23 @@ public class Game extends Model {
     @Id
     private String id;
 
-    private String activePlayerName;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Player activePlayer;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     private final List<Player> players;
 
     public Game(List<Player> players) {
-        this.players = players;
-        activePlayerName = players.get(0).getName();
+        this.players = Collections.unmodifiableList(players);
+        activePlayer = players.get(0);
     }
 
     public void round(Turn turn) {
         turn.proceed();
     }
 
-    public boolean isActivePit(String playerName, int pitIndex) {
-        Player player = getPlayerByName(playerName);
-        return playerName.equals(activePlayerName) && player.isNotEmpty(pitIndex);
+    public boolean isActivePit(Player player, int pitIndex) {
+        return player.equals(activePlayer) && player.isNotEmpty(pitIndex);
     }
 
     public Player getPlayerByName(String playerName) {
@@ -49,15 +47,15 @@ public class Game extends Model {
     }
 
     public List<Player> getPlayers() {
-        return new ArrayList<>(players);
+        return players;
     }
 
-    public String getActivePlayerName() {
-        return activePlayerName;
+    public Player getActivePlayer() {
+        return activePlayer;
     }
 
-    public void setActivePlayerName(String activePlayerName) {
-        this.activePlayerName = activePlayerName;
+    public void setActivePlayer(Player activePlayer) {
+        this.activePlayer = activePlayer;
     }
 
     public boolean isOver() {

@@ -11,7 +11,7 @@
         @for(pit <- player.getPits()){
         <tr>
             <td>
-                @if(game.isActivePit(player.getName(), pit.getIndex())) {
+                @if(game.isActivePit(player, pit.getIndex())) {
                 <a href="@routes.Application.round(game.getId(), player.getName(), pit.getIndex())">@pit.getLeavesQty()</a>
                 } else {
                 @pit.getLeavesQty()

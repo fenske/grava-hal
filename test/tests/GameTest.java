@@ -28,21 +28,21 @@ public class GameTest {
     @Test
     public void testConstructor() {
         assertThat(game.getPlayers().size(), is(equalTo(2)));
-        assertThat(game.getActivePlayerName(), is(equalTo("Ivanov")));
+        assertThat(game.getActivePlayer().getName(), is(equalTo("Ivanov")));
     }
 
     @Test
     public void testIsActive() {
         for (Player player : game.getPlayers()) {
-            game.setActivePlayerName(player.getName());
+            game.setActivePlayer(player);
             for (CommonPit pit : player.getPits()) {
-                assertThat(game.isActivePit(player.getName(), pit.getIndex()), is(true));
+                assertThat(game.isActivePit(player, pit.getIndex()), is(true));
             }
         }
         Player chosenPlayer = game.getPlayers().get(0);
         CommonPit selectedPit = chosenPlayer.getPits().get(0);
         Turn turn = new Turn(game, chosenPlayer.getName(), selectedPit.getIndex());
-        assertThat(game.isActivePit(chosenPlayer.getName(), selectedPit.getIndex()), is(false));
+        assertThat(game.isActivePit(chosenPlayer, selectedPit.getIndex()), is(false));
     }
 
     @Test
